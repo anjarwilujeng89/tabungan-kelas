@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { Alert } from "@/components/ui/Alert";
 import { Modal, ModalContent, ModalFooter } from "@/components/ui/Modal";
 import { Badge } from "@/components/ui/Badge";
@@ -36,6 +37,7 @@ export const TransactionPage: React.FC = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [selectedMemberName, setSelectedMemberName] = useState("");
 
   const {
     register,
@@ -69,6 +71,7 @@ export const TransactionPage: React.FC = () => {
       await createMutation.mutateAsync(data);
       showSuccess("Transaksi berhasil ditambahkan");
       setShowModal(false);
+      setSelectedMemberName("");
       reset();
     } catch (err) {
       showError(
@@ -288,6 +291,7 @@ export const TransactionPage: React.FC = () => {
           isOpen={showModal}
           onClose={() => {
             setShowModal(false);
+            setSelectedMemberName("");
             reset();
           }}
           title="Tambah Transaksi Baru"
@@ -295,11 +299,13 @@ export const TransactionPage: React.FC = () => {
         >
           <ModalContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <Select
+              <SearchableSelect
                 label="Anggota"
                 error={errors.memberId?.message}
                 {...register("memberId")}
                 options={members.map((m) => ({ value: m.id, label: m.name }))}
+                displayValue={selectedMemberName}
+                onSelectMember={(value, label) => setSelectedMemberName(label)}
               />
 
               <Select
